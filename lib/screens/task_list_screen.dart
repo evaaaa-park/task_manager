@@ -26,6 +26,27 @@ class _TaskListScreenState extends State<TaskListScreen> {
     _taskController.clear();
   }
 
+  Future<void> _confirmDelete(String taskId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete task?'),
+        content: const Text('This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) _taskService.deleteTask(taskId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +99,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _taskService.deleteTask(task.id),
+                        onPressed: () => _confirmDelete(task.id),  // 다이얼로그 연결
                       ),
                     );
                   },
