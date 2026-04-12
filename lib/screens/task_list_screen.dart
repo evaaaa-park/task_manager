@@ -84,7 +84,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     final task = tasks[index];
-                    return ListTile(
+                    // ↓↓↓ ListTile → ExpansionTile로 교체 ↓↓↓
+                    return ExpansionTile(
                       leading: Checkbox(
                         value: task.isCompleted,
                         onChanged: (_) => _taskService.toggleTask(task),
@@ -99,8 +100,40 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _confirmDelete(task.id),  // 다이얼로그 연결
+                        onPressed: () => _confirmDelete(task.id),
                       ),
+                      children: [
+                        // 기존 서브태스크 목록
+                        ...task.subtasks.map((sub) => ListTile(
+                          contentPadding: const EdgeInsets.only(left: 48),
+                          title: Text(sub['title'] ?? ''),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            onPressed: () {
+                              final updated =
+                                  List<Map<String, dynamic>>.from(task.subtasks)
+                                    ..remove(sub);
+                              _taskService.updateSubtasks(task.id, updated);
+                            },
+                          ),
+                        )),
+                        // 서브태스크 추가 입력
+                        ListTile(
+                          contentPadding:
+                              const EdgeInsets.only(left: 48, right: 16),
+                          title: TextField(
+                            decoration: const InputDecoration(
+                                hintText: 'Add subtask...'),
+                            onSubmitted: (value) {
+                              if (value.trim().isEmpty) return;
+                              final updated =
+                                  List<Map<String, dynamic>>.from(task.subtasks)
+                                    ..add({'title': value.trim()});
+                              _taskService.updateSubtasks(task.id, updated);
+                            },
+                          ),
+                        ),
+                      ],
                     );
                   },
                 );
