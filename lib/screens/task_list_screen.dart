@@ -12,7 +12,7 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   final TextEditingController _taskController = TextEditingController();
   final TaskService _taskService = TaskService();
-  String _searchQuery = '';   // ← 변수만 여기
+  String _searchQuery = '';   
 
   @override
   void dispose() {
@@ -54,7 +54,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       appBar: AppBar(title: const Text('Task Manager')),
       body: Column(
         children: [
-          // 검색바 ← 여기
+
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
             child: TextField(
@@ -67,7 +67,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   setState(() => _searchQuery = value.toLowerCase()),
             ),
           ),
-          // 태스크 입력창
+
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(children: [
@@ -91,7 +91,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
-                // 검색 필터 적용
+
                 final tasks = (snapshot.data ?? [])
                     .where((t) => t.title.toLowerCase().contains(_searchQuery))
                     .toList();
